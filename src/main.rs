@@ -1,6 +1,6 @@
 pub mod cfgs;
 pub mod error;
-pub use cfgs::get_cmds;
+pub use cfgs::Store;
 
 use clap::{crate_authors, crate_description, crate_name, crate_version, App};
 
