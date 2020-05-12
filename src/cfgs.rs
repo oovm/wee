@@ -1,11 +1,13 @@
 use std::collections::HashMap;
 use std::fs;
 use std::io::Error;
-use toml::Value;
+
+use serde_json::Value as Json;
+use toml::Value as Toml;
 
 pub struct Store {
-    secrets: HashMap<Box<str>, String>,
-    scripts: HashMap<Box<str>, String>,
+    pub secrets: HashMap<Box<str>, String>,
+    pub scripts: HashMap<Box<str>, String>,
 }
 
 impl Default for Store {
@@ -18,55 +20,63 @@ impl Default for Store {
 }
 
 impl Store {
-    #[test]
-    pub fn read_configs() {
+    pub fn read_configs() -> Store {
         let mut store = Store::default();
-        store.try_rust();
-        store.try_js();
+        store.check_rust();
+        store.check_js();
+        //store.scripts.retain(|k, _| k.to_string().contains(' '));
+        return store;
     }
-    fn try_rust(mut self) {
-        match fs::read_to_string("Cargo.toml") {
-            Ok(o) => {
-                match o.parse::<Value>() {
-                    Ok(value) => {
-                        match value {
-                            Value::Table(dict) => {
-                                match dict.get("env") {
-                                    None => {}
-                                    Some(_) => {}
-                                }
-                                match dict.get("scripts") {
-                                    None => {}
-                                    Some(s) => {
-                                        match s {
-                                            Value::Table(m) => {
-                                                for (k, v) in m {
-                                                    match v {
-                                                        Value::String(str) => {
-                                                            self.scripts.insert(Box::from(k), str.clone())
-                                                        }
-                                                        _ => {}
-                                                    }
-                                                }
-                                            }
-                                            _ => {}
-                                        }
-                                    }
+    fn check_rust(&mut self) {
+        if let Ok(o) = fs::read_to_string("Cargo.toml") {
+            if let Ok(value) = o.parse::<Toml>() {
+                if let Toml::Table(dict) = value {
+                    if let Some(s) = dict.get("envs") {
+                        if let Toml::Table(m) = s {
+                            for (k, v) in m {
+                                if let Toml::String(str) = v {
+                                    self.secrets.insert(Box::from(k.clone()), str.clone());
                                 }
                             }
-                            _ => {}
                         }
                     }
-                    Err(_) => {}
+                    if let Some(s) = dict.get("scripts") {
+                        if let Toml::Table(m) = s {
+                            for (k, v) in m {
+                                if let Toml::String(str) = v {
+                                    self.scripts.insert(Box::from(k.clone()), str.clone());
+                                }
+                            }
+                        }
+                    }
                 }
             }
-            Err(_) => {}
-        };
+        }
     }
-    fn try_js(mut self) {
-        match fs::read_to_string("package.json") {
-            Ok(o) => {}
-            _ => {}
+    fn check_js(&mut self) {
+        if let Ok(ref o) = fs::read_to_string("package.json") {
+            if let Ok(value) = serde_json::from_str::<Json>(o) {
+                if let Json::Object(dict) = value {
+                    if let Some(s) = dict.get("envs") {
+                        if let Json::Object(m) = s {
+                            for (k, v) in m {
+                                if let Json::String(str) = v {
+                                    self.secrets.insert(Box::from(k.clone()), str.clone());
+                                }
+                            }
+                        }
+                    }
+                    if let Some(s) = dict.get("scripts") {
+                        if let Json::Object(m) = s {
+                            for (k, v) in m {
+                                if let Json::String(str) = v {
+                                    self.scripts.insert(Box::from(k.clone()), str.clone());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
