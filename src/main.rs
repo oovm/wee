@@ -3,6 +3,7 @@ pub mod error;
 
 pub use cfgs::Store;
 
+use colored::*;
 use clap::{crate_authors, crate_description, crate_name, crate_version, App, Arg};
 
 fn main() {
@@ -14,7 +15,6 @@ fn main() {
             Arg::with_name("show")
                 .short('s')
                 .long("show")
-                .multiple(true)
                 .about("Show all available scripts"),
         )
         .arg(
@@ -30,9 +30,13 @@ fn main() {
     match app.occurrences_of("show") {
         0 => {}
         _ => {
-            println!("All available commands: {:?}", store.scripts.len());
+            println!("{}", format!("All available commands: {}", store.scripts.len()).purple());
             for (k, v) in store.scripts {
-                println!("{}: \"{}\"", k, v)
+                if v.trim().lines().count() == 1 {
+                    print!("{}: \"{}\"", k.green(), v)
+                } else {
+                    println!("{}: \"\"\"\n{}\"\"\"", k.green(), v)
+                }
             }
             return;
         }

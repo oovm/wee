@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::fs;
-use std::io::Error;
 
 use serde_json::Value as Json;
 use toml::Value as Toml;
