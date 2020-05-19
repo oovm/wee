@@ -3,8 +3,10 @@ pub mod error;
 
 pub use cfgs::Store;
 
-use colored::*;
 use clap::{crate_authors, crate_description, crate_name, crate_version, App, Arg};
+use colored::*;
+use std::time::Instant;
+use subprocess::Exec;
 
 fn main() {
     let app = App::new(crate_name!())
@@ -18,6 +20,18 @@ fn main() {
                 .about("Show all available scripts"),
         )
         .arg(
+            Arg::with_name("dump")
+                .short('d')
+                .long("dump")
+                .about("Use dump to avoid repeatedly scanning configuration files"),
+        )
+        .arg(
+            Arg::with_name("time")
+                .short('t')
+                .long("time")
+                .about("Show execution time"),
+        )
+        .arg(
             Arg::with_name("cmd")
                 .required(false)
                 .index(1)
@@ -26,14 +40,19 @@ fn main() {
         .get_matches();
 
     let store = Store::read_configs();
+    #[cfg(windows)]
+    colored::control::set_virtual_terminal(true).ok();
 
     match app.occurrences_of("show") {
         0 => {}
         _ => {
-            println!("{}", format!("All available commands: {}", store.scripts.len()).purple());
+            println!(
+                "{}",
+                format!("All available commands: {}", store.scripts.len()).purple()
+            );
             for (k, v) in store.scripts {
                 if v.trim().lines().count() == 1 {
-                    print!("{}: \"{}\"", k.green(), v)
+                    println!("{}: \"{}\"", k.green(), v)
                 } else {
                     println!("{}: \"\"\"\n{}\"\"\"", k.green(), v)
                 }
@@ -42,11 +61,28 @@ fn main() {
         }
     }
 
+    let now = Instant::now();
     match app.value_of("cmd") {
         Some(o) => match store.scripts.get(o) {
-            None => println!("Command: '{}' not found!", o),
-            Some(s) => println!("{}", s),
+            None => println!("{}", format!("Command: '{}' not found!", o).red()),
+            Some(s) => {
+                if let Ok(_) = Exec::shell(s).join() {
+                    match app.occurrences_of("time") {
+                        0 => {
+                            return;
+                        }
+                        _ => println!(
+                            "{}",
+                            format!("finished in {}s", now.elapsed().as_secs_f64()).blue()
+                        ),
+                    };
+                }
+            }
         },
-        None => println!("wee --help"),
+        None => {
+            if let Ok(_) = Exec::shell("wee --help").join() {
+                return;
+            }
+        }
     }
 }
