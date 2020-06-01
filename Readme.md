@@ -2,7 +2,13 @@
 
 Help organize your workspace scripts!
 
+```bash
+cargo install wee
 ```
+
+
+
+```bash
 USAGE:
     wee [FLAGS] [cmd]
 
@@ -40,3 +46,8 @@ env = {
 
 
 ```
+
+## Todo
+
+- [ ] Auto Completion 
+- [ ] Auto Correction

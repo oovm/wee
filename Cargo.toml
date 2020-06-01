@@ -1,23 +1,21 @@
 [package]
-name = "wee"
-version = "0.2.0"
-authors = ["192607617@qq.com"]
+authors = ["Aster <192607617@qq.com>"]
+description = "Help organize your workspace scripts!"
 edition = "2018"
-description = "..."
-repository = "https://github.com/GalAster/wee"
 license = "MPL-2.0"
-
+name = "wee"
+repository = "https://github.com/GalAster/wee"
+version = "0.2.0"
 
 [dependencies]
-clap = { version = "3.0.0-beta.1"}
-toml = "0.5"
-serde_json = "1.0"
+clap = "3.0.0-beta.1"
 colored = "1.9"
-run_script = "0.6.3"
-subprocess = "0.2.4"
+serde_json = "1.0"
+subprocess = "0.2"
+toml = "0.5"
 
 [scripts]
-update = "cargo update"
+fmt = "cargo fmt"
 install = "cargo install --path ."
 publish = "cargo publish"
-fmt = "cargo fmt"
+update = "cargo update"
