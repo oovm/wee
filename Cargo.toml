@@ -1,21 +1,21 @@
 [package]
+name = "wee"
+version = "0.3.0"
 authors = ["Aster <192607617@qq.com>"]
 description = "Help organize your workspace scripts!"
-edition = "2018"
+edition = "2021"
 license = "MPL-2.0"
-name = "wee"
-repository = "https://github.com/GalAster/wee"
-version = "0.2.0"
+repository = "https://github.com/oovm/wee"
 
 [dependencies]
-clap = "3.0.0-beta.1"
-colored = "1.9"
-serde_json = "1.0"
-subprocess = "0.2"
-toml = "0.5"
+clap = "3.0.12"
+colored = "2.0.0"
+serde_json = "1.0.78"
+subprocess = "0.2.8"
+toml = "0.5.8"
 
-[scripts]
-fmt = "cargo fmt"
-install = "cargo install --path ."
-publish = "cargo publish"
-update = "cargo update"
+[package.metadata.wee]
+f = "cargo fmt"
+i = "cargo install --path ."
+p = "cargo publish --allow-dirty"
+u = "cargo upgrade"
