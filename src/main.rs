@@ -3,10 +3,34 @@ pub mod error;
 
 pub use cfgs::Store;
 
-use clap::{crate_authors, crate_description, crate_name, crate_version, App, Arg};
+// use clap::{crate_authors, crate_description, crate_name, crate_version, App, Arg};
 use colored::*;
 use std::time::Instant;
 use subprocess::Exec;
+
+use clap::Parser;
+
+/// Simple program to greet a person
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+pub struct Wee {
+    /// Sets the input file to use
+
+    cmd: String,
+    /// Show all available scripts
+    #[clap(short, long)]
+    show: String,
+    /// Show execution time
+    #[clap(short, long)]
+    time: String,
+    #[clap(short, long)]
+    dump: String,
+    /// Number of times to greet
+    #[clap(short, long, default_value_t = 1)]
+    count: u8,
+}
+
+
 
 fn main() {
     let app = App::new(crate_name!())

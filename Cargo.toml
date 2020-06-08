@@ -8,11 +8,14 @@ license = "MPL-2.0"
 repository = "https://github.com/oovm/wee"
 
 [dependencies]
-clap = "3.0.12"
 colored = "2.0.0"
 serde_json = "1.0.78"
 subprocess = "0.2.8"
 toml = "0.5.8"
+
+[dependencies.clap]
+version = "3.0.12"
+featrues = ["crate", "derive"]
 
 [package.metadata.wee]
 f = "cargo fmt"
