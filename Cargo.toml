@@ -12,6 +12,7 @@ colored = "2.0.0"
 serde_json = "1.0.78"
 subprocess = "0.2.8"
 toml = "0.5.8"
+anyhow = "1.0.53"
 
 [dependencies.clap]
 version = "3.0.12"
