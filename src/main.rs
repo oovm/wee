@@ -1,7 +1,6 @@
-pub mod cfgs;
-pub mod error;
+mod store;
 
-pub use cfgs::Store;
+pub use self::store::Store;
 
 // use clap::{crate_authors, crate_description, crate_name, crate_version, App, Arg};
 use colored::*;
@@ -10,12 +9,14 @@ use subprocess::Exec;
 
 use clap::Parser;
 
+/// Should do early return
+pub type ShouldReturn = bool;
+
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 pub struct Wee {
     /// Sets the input file to use
-
     cmd: String,
     /// Show all available scripts
     #[clap(short, long)]
@@ -30,39 +31,8 @@ pub struct Wee {
     count: u8,
 }
 
-
-
 fn main() {
-    let app = App::new(crate_name!())
-        .version(crate_version!())
-        .author(crate_authors!("\n"))
-        .about(crate_description!())
-        .arg(
-            Arg::with_name("show")
-                .short('s')
-                .long("show")
-                .about("Show all available scripts"),
-        )
-        .arg(
-            Arg::with_name("dump")
-                .short('d')
-                .long("dump")
-                .about("Use dump to avoid repeatedly scanning configuration files"),
-        )
-        .arg(
-            Arg::with_name("time")
-                .short('t')
-                .long("time")
-                .about("Show execution time"),
-        )
-        .arg(
-            Arg::with_name("cmd")
-                .required(false)
-                .index(1)
-                .about("Sets the input file to use"),
-        )
-        .get_matches();
-
+    let app = Wee::parse();
     let store = Store::read_configs();
     #[cfg(windows)]
     colored::control::set_virtual_terminal(true).ok();
@@ -110,3 +80,6 @@ fn main() {
         }
     }
 }
+
+#[test]
+fn test() {}

@@ -16,7 +16,7 @@ anyhow = "1.0.53"
 
 [dependencies.clap]
 version = "3.0.12"
-featrues = ["crate", "derive"]
+features = ["derive"]
 
 [package.metadata.wee]
 f = "cargo fmt"

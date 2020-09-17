@@ -14,7 +14,7 @@ impl Store {
         for (k, v) in env {
             match v {
                 Toml::String(str) => {
-                    self.secrets.insert(Box::from(k.clone()), str.clone());
+                    self.secrets.insert(k.to_owned(), str.clone());
                 }
                 _ => println!("❌ `{}` is not a valid env variable", k),
             }
@@ -26,7 +26,7 @@ impl Store {
         for (k, v) in wee {
             match v {
                 Toml::String(str) => {
-                    self.scripts.insert(Box::from(k.clone()), str.clone());
+                    self.scripts.insert(k.to_owned(), str.clone());
                 }
                 _ => println!("❌ `{}` is not a valid script", k),
             }
