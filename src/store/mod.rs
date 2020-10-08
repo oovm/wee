@@ -1,7 +1,7 @@
 mod support_cargo;
 mod support_npm;
 
-use anyhow::Result;
+use colored::Colorize;
 use serde_json::Value as Json;
 use std::collections::hash_map::Entry;
 use std::collections::HashMap;
@@ -26,43 +26,60 @@ impl Default for Store {
 impl Store {
     pub fn read_configs() -> Store {
         let mut store = Store::default();
-        store.check_cargo().ok();
-        store.check_npm().ok();
+        store.check_cargo();
+        store.check_npm();
         //store.scripts.retain(|k, _| k.to_string().contains(' '));
         return store;
     }
-    pub fn insert_script(&mut self, k: S, v: S)
+    pub fn get_script(&self, key: &str) -> Option<&String> {
+        self.scripts.get(key)
+    }
+    pub fn print_scripts(&self, details: usize) {
+        match details {
+            _ => {}
+        }
+        println!(
+            "{}",
+            format!("All available commands: {}", self.scripts.len()).purple()
+        );
+        for (k, v) in &self.scripts {
+            if v.trim().lines().count() == 1 {
+                println!("{}: \"{}\"", k.green(), v)
+            } else {
+                println!("{}: \"\"\"\n{}\"\"\"", k.green(), v)
+            }
+        }
+    }
+    pub fn insert_script<S>(&mut self, k: S, v: S)
     where
         S: Into<String>,
     {
         let key = k.into();
+        let value = v.into();
         match self.scripts.entry(key) {
-            Entry::Occupied(e) => {
+            Entry::Occupied(mut e) => {
                 println!("GG");
-                *e.get_mut() = v
+                e.insert(value);
             }
             Entry::Vacant(e) => {
-                e.insert(v.into());
+                e.insert(value);
             }
         }
     }
-    pub fn insert_secret(&mut self, k: S, v: S)
+    pub fn insert_secret<S>(&mut self, k: S, v: S)
     where
         S: Into<String>,
     {
         let key = k.into();
+        let value = v.into();
         match self.secrets.entry(key) {
-            Entry::Occupied(e) => {
+            Entry::Occupied(mut e) => {
                 println!("GG");
-                *e.get_mut() = v
+                e.insert(value);
             }
             Entry::Vacant(e) => {
-                e.insert(v.into());
+                e.insert(value);
             }
         }
     }
-}
-
-impl Store {
-    pub fn show_scripts(&self, times: usize) -> bool {}
 }

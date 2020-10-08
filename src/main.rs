@@ -20,10 +20,10 @@ pub struct Wee {
     cmd: String,
     /// Show all available scripts
     #[clap(short, long)]
-    show: String,
+    show: usize,
     /// Show execution time
     #[clap(short, long)]
-    time: String,
+    time: usize,
     #[clap(short, long)]
     dump: String,
     /// Number of times to greet
@@ -37,48 +37,31 @@ fn main() {
     #[cfg(windows)]
     colored::control::set_virtual_terminal(true).ok();
 
-    match app.occurrences_of("show") {
-        0 => {}
-        _ => {
-            println!(
-                "{}",
-                format!("All available commands: {}", store.scripts.len()).purple()
-            );
-            for (k, v) in store.scripts {
-                if v.trim().lines().count() == 1 {
-                    println!("{}: \"{}\"", k.green(), v)
-                } else {
-                    println!("{}: \"\"\"\n{}\"\"\"", k.green(), v)
-                }
-            }
-            return;
-        }
+    if app.show != 0 {
+        store.print_scripts(app.show);
+        return;
     }
 
     let now = Instant::now();
-    match app.value_of("cmd") {
-        Some(o) => match store.scripts.get(o) {
-            None => println!("{}", format!("Command: '{}' not found!", o).red()),
-            Some(s) => {
-                if let Ok(_) = Exec::shell(s).join() {
-                    match app.occurrences_of("time") {
-                        0 => {
-                            return;
-                        }
-                        _ => println!(
-                            "{}",
-                            format!("finished in {}s", now.elapsed().as_secs_f64()).blue()
-                        ),
-                    };
-                }
-            }
-        },
-        None => {
-            if let Ok(_) = Exec::shell("wee --help").join() {
-                return;
+    match store.get_script(&app.cmd) {
+        None => println!("{}", format!("Command: '{}' not found!", app.cmd).red()),
+        Some(s) => {
+            if let Ok(_) = Exec::shell(s).join() {
+                match app.time {
+                    0 => {
+                        return;
+                    }
+                    _ => println!(
+                        "{}",
+                        format!("finished in {}s", now.elapsed().as_secs_f64()).blue()
+                    ),
+                };
             }
         }
     }
+    // if let Ok(_) = Exec::shell("wee --help").join() {
+    //     return;
+    // }
 }
 
 #[test]
