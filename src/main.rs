@@ -2,7 +2,6 @@ mod store;
 
 pub use self::store::Store;
 
-// use clap::{crate_authors, crate_description, crate_name, crate_version, App, Arg};
 use colored::*;
 use std::time::Instant;
 use subprocess::Exec;
@@ -12,20 +11,21 @@ use clap::Parser;
 /// Should do early return
 pub type ShouldReturn = bool;
 
-/// Simple program to greet a person
+/// Organize your workspace scripts
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 pub struct Wee {
-    /// Sets the input file to use
+    /// Sets the Command that you want to run
     cmd: String,
     /// Show all available scripts
-    #[clap(short, long)]
+    #[clap(short, long, parse(from_occurrences))]
     show: usize,
     /// Show execution time
-    #[clap(short, long)]
+    #[clap(short, long, parse(from_occurrences))]
     time: usize,
+    /// Use dump to avoid repeatedly scanning configuration files
     #[clap(short, long)]
-    dump: String,
+    dump: bool,
     /// Number of times to greet
     #[clap(short, long, default_value_t = 1)]
     count: u8,
@@ -44,7 +44,7 @@ fn main() {
 
     let now = Instant::now();
     match store.get_script(&app.cmd) {
-        None => println!("{}", format!("Command: '{}' not found!", app.cmd).red()),
+        None => println!("{}", format!("Command: `{}` not found!", app.cmd).red()),
         Some(s) => {
             if let Ok(_) = Exec::shell(s).join() {
                 match app.time {
@@ -59,10 +59,4 @@ fn main() {
             }
         }
     }
-    // if let Ok(_) = Exec::shell("wee --help").join() {
-    //     return;
-    // }
 }
-
-#[test]
-fn test() {}

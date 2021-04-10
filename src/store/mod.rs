@@ -56,9 +56,9 @@ impl Store {
     {
         let key = k.into();
         let value = v.into();
-        match self.scripts.entry(key) {
+        match self.scripts.entry(key.to_owned()) {
             Entry::Occupied(mut e) => {
-                println!("GG");
+                println!("script {} have been override", key.yellow());
                 e.insert(value);
             }
             Entry::Vacant(e) => {
@@ -72,9 +72,9 @@ impl Store {
     {
         let key = k.into();
         let value = v.into();
-        match self.secrets.entry(key) {
+        match self.secrets.entry(key.to_owned()) {
             Entry::Occupied(mut e) => {
-                println!("GG");
+                println!("env {} have been override", key.yellow());
                 e.insert(value);
             }
             Entry::Vacant(e) => {
